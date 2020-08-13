@@ -1,36 +1,8 @@
-// d3.csv("static/COVID-19 Activity.csv", function(d) {
-//     return {
-//     //   date: new Date(+d.REPORT_DATE), 
-//       county_no: +d.COUNTY_FIPS_NUMBER,
-//       new_cases: +d.PEOPLE_POSITIVE_CASES_COUNT,
-//       total_cases: +d.PEOPLE_POSITIVE_NEW_CASES_COUNT,
-//       new_death: +d.PEOPLE_DEATH_NEW_COUNT, 
-//       total_death: +d.PEOPLE_DEATH_COUNT
-//     };
-//   }, function(error, rows) {
-//     console.log(rows);
-//   });
-
-// (async function(){
-//     var covidData = await d3.json("static/travis_co.json").catch(function(error) {
-//       console.log(error);
-//     });
-//     console.log(covidData);
-
-
-// })()
-
-
-
 function buildPlot(county) {
-
-  console.log(county)
-
 
   /* data route */
   const url = `/county_data?county=${county}`;
   d3.json(url).then(function(response) {
-
 
       // Trace for new case data
       let traceNewCases = {
@@ -128,7 +100,6 @@ function buildPlot(county) {
 // Select dropdown menu using D3
 var selectDrop = d3.select("#selDataset");
 
-
 // Create event handler
 selectDrop.on("change",runEnter);
 // Event handler function
@@ -142,9 +113,3 @@ function runEnter() {
 
   buildPlot(userCounty);
 };
-
-
-
-
-
-
