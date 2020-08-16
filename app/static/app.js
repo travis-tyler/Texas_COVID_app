@@ -40,7 +40,7 @@ function buildPlot(county) {
             title: 'Total cases (log)',
             overlaying: 'y',
             side: 'right',
-            type: 'log',
+            type: 'log'
           },
           font: {
               color: "white"
@@ -85,7 +85,7 @@ function buildPlot(county) {
             title: 'Total deaths (log)',
             overlaying: 'y',
             side: 'right',
-            type: 'log',
+            type: 'log'
           },
           font: {
               color: "white"

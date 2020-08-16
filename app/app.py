@@ -14,6 +14,7 @@ app = Flask(__name__)
 # Read in CSV data from URL
 url = 'https://query.data.world/s/o6que7zbpjnykcz3ayncuhwkgsb3dp'
 df = pd.DataFrame(pd.read_csv(url))
+df = df.dropna(how='all')
 
 # Create new 'county_state' column for easier selection
 df['county_state'] = df['COUNTY_NAME'] + ', ' + df['PROVINCE_STATE_NAME']
@@ -59,7 +60,8 @@ def county_data():
     
     # Returns total USA numbers
     if county == 'USA - Sum':
-        total_df = df.groupby('date')[['new_cases','total_cases','new_deaths','total_deaths']].sum()
+        total_df = df.sort_values('date')
+        total_df = total_df.groupby('date')[['new_cases','total_cases','new_deaths','total_deaths']].sum()
         output_json = {'date':total_df.index.to_list(),
                        'new_cases':total_df.new_cases.to_list(),
                        'total_cases':total_df.total_cases.to_list(),
@@ -68,7 +70,8 @@ def county_data():
         }
 
     elif county == 'Texas - Sum':
-        total_df = df_texas.groupby('date')[['new_cases','total_cases','new_deaths','total_deaths']].sum()
+        total_df = df_texas.sort_values('date')
+        total_df = total_df.groupby('date')[['new_cases','total_cases','new_deaths','total_deaths']].sum()
         output_json = {'date':total_df.index.to_list(),
                        'new_cases':total_df.new_cases.to_list(),
                        'total_cases':total_df.total_cases.to_list(),
@@ -79,7 +82,8 @@ def county_data():
         
     # Returns individual county numbers
     else:
-        county_df = df_texas.loc[df.county_state==county]
+        county_df = df_texas.loc[df_texas.county_state==county]
+        county_df = county_df.sort_values('date')
         output_json = {'date':county_df.date.to_list(),
                        'new_cases':county_df.new_cases.to_list(),
                        'total_cases':county_df.total_cases.to_list(),
