@@ -14,6 +14,7 @@ app = Flask(__name__)
 # Read in CSV data from URL
 url = 'https://query.data.world/s/o6que7zbpjnykcz3ayncuhwkgsb3dp'
 df = pd.DataFrame(pd.read_csv(url))
+df = df.loc[df.COUNTRY_ALPHA_3_CODE=='USA']
 df = df.dropna(how='all')
 
 # Create new 'county_state' column for easier selection
