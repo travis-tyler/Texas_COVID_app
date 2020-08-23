@@ -9,7 +9,22 @@ function buildPlot(county) {
           x: response.date,
           y: response.new_cases,
           type:"bar",
+          bar:{
+            color:'orange'
+          },
           name:"New cases"
+      };
+
+      // Trace for rolling case data
+      let traceRollingCases = {
+        x: response.date,
+        y: response.rolling_cases,
+        type:"line",
+        line:{
+          color:'lightblue',
+          dash: 'dot'
+        },
+        name:"14-day rolling avg."
       };
 
       // Trace for total cases data
@@ -18,10 +33,13 @@ function buildPlot(county) {
           y: response.total_cases,
           yaxis: 'y2',
           type: "line",
+          line:{
+            color:'orange'
+          },
           name: "Total cases"
       };
 
-      let dataCases = [traceNewCases, traceAllCases];
+      let dataCases = [traceNewCases, traceRollingCases, traceAllCases];
 
       // Layout for duel-axis graph
       let layoutCases = {
@@ -29,18 +47,18 @@ function buildPlot(county) {
           height: 700,
           width: 1200,
           xaxis: {
-              title: "Date"
-            },
-            yaxis: {
-              title: "New cases",
-            },
+            title: "Date"
+          },
+          yaxis: {
+            title: "New cases"
+          },
           paper_bgcolor: 'rgba(0,0,0,0)',
           plot_bgcolor: 'rgba(0,0,0,0)',
           yaxis2: {
             title: 'Total cases (log)',
             overlaying: 'y',
             side: 'right',
-            type: 'log'
+            type: 'log'          
           },
           font: {
               color: "white"
@@ -49,7 +67,7 @@ function buildPlot(county) {
 
       Plotly.newPlot("casePlot", dataCases, layoutCases);
 
-      // Trace for new case data
+      // Trace for new death data
       let traceNewDealths = {
         x: response.date,
         y: response.new_deaths,
@@ -57,16 +75,31 @@ function buildPlot(county) {
         name:"New deaths"
       };
 
-      // Trace for total cases data
+      // Trace for rolling death data
+      let traceRollingDeath = {
+        x: response.date,
+        y: response.rolling_death,
+        type:"line",
+        line:{
+          color:'lightblue',
+          dash: 'dot'
+        },
+        name:"14-day rolling avg."
+      };
+
+      // Trace for total death data
       let traceAllDeaths = {
           x: response.date,
           y: response.total_deaths,
           yaxis: 'y2',
           type: "line",
+          line:{
+            color:'orange'
+          },
           name: "Total deaths"
       };
 
-      let dataDeaths = [traceNewDealths, traceAllDeaths];
+      let dataDeaths = [traceNewDealths, traceRollingDeath, traceAllDeaths];
 
       // Layout for duel-axis graph
       let layoutDeaths = {
@@ -75,18 +108,17 @@ function buildPlot(county) {
           width: 1200,
           xaxis: {
               title: "Date"
-            },
-            yaxis: {
-              title: "New deaths",
-            },
+          },
+          yaxis: {
+            title: "New deaths",
+          },
           paper_bgcolor: 'rgba(0,0,0,0)',
           plot_bgcolor: 'rgba(0,0,0,0)',
           yaxis2: {
             title: 'Total deaths (log)',
             overlaying: 'y',
             side: 'right',
-            type: 'log'
-          },
+            type: 'log'          },
           font: {
               color: "white"
           }        

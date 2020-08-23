@@ -61,23 +61,33 @@ def county_data():
     
     # Returns total USA numbers
     if county == 'USA - Sum':
-        total_df = df.sort_values('date')
-        total_df = total_df.groupby('date')[['new_cases','total_cases','new_deaths','total_deaths']].sum()
-        output_json = {'date':total_df.index.to_list(),
-                       'new_cases':total_df.new_cases.to_list(),
-                       'total_cases':total_df.total_cases.to_list(),
-                       'new_deaths':total_df.new_deaths.to_list(),
-                       'total_deaths':total_df.total_deaths.to_list()
+        total_usa = df.sort_values('date')
+        total_usa = total_usa.groupby('date')[['new_cases','total_cases','new_deaths','total_deaths']].sum()
+        total_usa['rolling_cases'] = total_usa.new_cases.rolling(14).mean() 
+        total_usa['rolling_death'] = total_usa.new_deaths.rolling(14).mean() 
+        total_usa = total_usa.dropna(how='any')
+        output_json = {'date':total_usa.index.to_list(),
+                       'new_cases':total_usa.new_cases.to_list(),
+                       'total_cases':total_usa.total_cases.to_list(),
+                       'new_deaths':total_usa.new_deaths.to_list(),
+                       'total_deaths':total_usa.total_deaths.to_list(),
+                       'rolling_cases':total_usa.rolling_cases.to_list(),
+                       'rolling_death':total_usa.rolling_death.to_list()
         }
 
     elif county == 'Texas - Sum':
-        total_df = df_texas.sort_values('date')
-        total_df = total_df.groupby('date')[['new_cases','total_cases','new_deaths','total_deaths']].sum()
-        output_json = {'date':total_df.index.to_list(),
-                       'new_cases':total_df.new_cases.to_list(),
-                       'total_cases':total_df.total_cases.to_list(),
-                       'new_deaths':total_df.new_deaths.to_list(),
-                       'total_deaths':total_df.total_deaths.to_list()
+        total_texas = df_texas.sort_values('date')
+        total_texas = total_texas.groupby('date')[['new_cases','total_cases','new_deaths','total_deaths']].sum()
+        total_texas['rolling_cases'] = total_texas.new_cases.rolling(14).mean() 
+        total_texas['rolling_death'] = total_texas.new_deaths.rolling(14).mean() 
+        total_texas = total_texas.dropna(how='any')
+        output_json = {'date':total_texas.index.to_list(),
+                       'new_cases':total_texas.new_cases.to_list(),
+                       'total_cases':total_texas.total_cases.to_list(),
+                       'new_deaths':total_texas.new_deaths.to_list(),
+                       'total_deaths':total_texas.total_deaths.to_list(),
+                       'rolling_cases':total_texas.rolling_cases.to_list(),
+                       'rolling_death':total_texas.rolling_death.to_list()
         }
 
         
@@ -85,11 +95,16 @@ def county_data():
     else:
         county_df = df_texas.loc[df_texas.county_state==county]
         county_df = county_df.sort_values('date')
+        county_df['rolling_cases'] = county_df.new_cases.rolling(14).mean() 
+        county_df['rolling_death'] = county_df.new_deaths.rolling(14).mean() 
+        county_df = county_df.dropna(how='any')
         output_json = {'date':county_df.date.to_list(),
                        'new_cases':county_df.new_cases.to_list(),
                        'total_cases':county_df.total_cases.to_list(),
                        'new_deaths':county_df.new_deaths.to_list(),
-                       'total_deaths':county_df.total_deaths.to_list()
+                       'total_deaths':county_df.total_deaths.to_list(),
+                       'rolling_cases':county_df.rolling_cases.to_list(),
+                       'rolling_death':county_df.rolling_death.to_list()
         }
         
     # Send to "/county_data"
