@@ -65,7 +65,9 @@ function buildPlot(county) {
           }        
       };
 
-      Plotly.newPlot("casePlot", dataCases, layoutCases);
+      let config = {responsive: true}
+
+      Plotly.newPlot("casePlot", dataCases, layoutCases, config);
 
       // Trace for new death data
       let traceNewDealths = {
@@ -124,7 +126,7 @@ function buildPlot(county) {
           }        
       };
 
-      Plotly.newPlot("deathPlot", dataDeaths, layoutDeaths);
+      Plotly.newPlot("deathPlot", dataDeaths, layoutDeaths, config);
 
   });
 }

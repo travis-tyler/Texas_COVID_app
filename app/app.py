@@ -43,8 +43,8 @@ df_texas = df.loc[df.state == 'Texas']
 # Create list of counties for dropdown menu
 county_list = df_texas['county_state'].unique().tolist()
 county_list = sorted(county_list)
-county_list.insert(0,'USA - Sum')
 county_list.insert(0,'Texas - Sum')
+county_list.insert(0,'USA - Sum')
 
 ##########################################################
 
