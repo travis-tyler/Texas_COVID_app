@@ -33,24 +33,16 @@
 
   <div class="row">
     <div class="col-md-2"></div>
-    <div class="col-md-6">
-      <p style="color: white;">Data from <a href='https://query.data.world/s/o6que7zbpjnykcz3ayncuhwkgsb3dp'>https://query.data.world/s/o6que7zbpjnykcz3ayncuhwkgsb3dp</a></p>
-    </div>
-    <br><br><br>
-  </div>
-
-  <div class="row">
-    <div class="col-md-2"></div>
     <div class="col-md-4">
       <select id="selDataset">
-        <option value="" disabled selected>Select county</option>
+        <option value="Travis" selected disabled>Select County</option>
         {% for county in all_counties %}
         <option value="{{ county }}">{{ county }}</option>
         {% endfor %} 
       </select>
     </div>
-    <br><br>
   </div>
+  
   <div class="row">
     <div class="col-md-2"></div>
     <div class="col-md-6">
@@ -68,8 +60,8 @@
     <br><br><br><br>
   </div>
   <div class="footer">
-    <h4>Created by Travis Tyler</h4>
-    <p style="color:white"><a href='https://github.com/travis-tyler/Texas_COVID_app'>https://github.com/travis-tyler/Texas_COVID_app</a></p>
+    <p style="color:white">Data from: <a href='https://query.data.world/s/o6que7zbpjnykcz3ayncuhwkgsb3dp'>https://query.data.world/s/o6que7zbpjnykcz3ayncuhwkgsb3dp</a></p>
+    <p style="color:white">GitHub: <a href='https://github.com/travis-tyler/Texas_COVID_app'>https://github.com/travis-tyler/Texas_COVID_app</a></p>
   </div>
 
 

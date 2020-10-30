@@ -8,23 +8,23 @@ function buildPlot(county) {
       let traceNewCases = {
           x: response.date,
           y: response.new_cases,
-          type:"bar",
+          type: 'bar',
           bar:{
-            color:'orange'
+            color: 'orange'
           },
-          name:"New cases"
+          name: 'New cases'
       };
 
       // Trace for rolling case data
       let traceRollingCases = {
         x: response.date,
         y: response.rolling_cases,
-        type:"line",
+        type: 'line',
         line:{
-          color:'lightblue',
+          color: 'lightblue',
           dash: 'dot'
         },
-        name:"14-day rolling avg."
+        name: '14-day rolling avg.'
       };
 
       // Trace for total cases data
@@ -34,7 +34,7 @@ function buildPlot(county) {
           yaxis: 'y2',
           type: "line",
           line:{
-            color:'orange'
+            color: 'orange'
           },
           name: "Total cases"
       };
@@ -43,14 +43,14 @@ function buildPlot(county) {
 
       // Layout for duel-axis graph
       let layoutCases = {
-          title: "Cumulative Cases (log) and New Daily Cases (linear)",
+          title: `${county} County Cumulative Cases (log) and New Daily Cases (linear)`,
           height: 700,
           width: 1200,
           xaxis: {
-            title: "Date"
+            title: 'Date'
           },
           yaxis: {
-            title: "New cases"
+            title: 'New cases'
           },
           paper_bgcolor: 'rgba(0,0,0,0)',
           plot_bgcolor: 'rgba(0,0,0,0)',
@@ -69,26 +69,26 @@ function buildPlot(county) {
 
       let config = {responsive: true}
 
-      Plotly.newPlot("casePlot", dataCases, layoutCases, config);
+      Plotly.newPlot('casePlot', dataCases, layoutCases, config);
 
       // Trace for new death data
       let traceNewDealths = {
         x: response.date,
         y: response.new_deaths,
-        type:"bar",
-        name:"New deaths"
+        type:'bar',
+        name:'New deaths'
       };
 
       // Trace for rolling death data
       let traceRollingDeath = {
         x: response.date,
         y: response.rolling_death,
-        type:"line",
+        type:'line',
         line:{
           color:'lightblue',
           dash: 'dot'
         },
-        name:"14-day rolling avg."
+        name:'14-day rolling avg.'
       };
 
       // Trace for total death data
@@ -96,25 +96,25 @@ function buildPlot(county) {
           x: response.date,
           y: response.total_deaths,
           yaxis: 'y2',
-          type: "line",
+          type: 'line',
           line:{
             color:'orange'
           },
-          name: "Total deaths"
+          name: 'Total deaths'
       };
 
       let dataDeaths = [traceNewDealths, traceRollingDeath, traceAllDeaths];
 
       // Layout for duel-axis graph
       let layoutDeaths = {
-          title: "Cumulative deaths (log) and New Daily Deaths (linear)",
+          title: `${county} Cumulative deaths (log) and New Daily Deaths (linear)`,
           height: 700,
           width: 1200,
           xaxis: {
-              title: "Date"
+              title: 'Date'
           },
           yaxis: {
-            title: "New deaths",
+            title: 'New deaths',
           },
           paper_bgcolor: 'rgba(0,0,0,0)',
           plot_bgcolor: 'rgba(0,0,0,0)',
@@ -127,28 +127,30 @@ function buildPlot(county) {
             dtick: 1          
           },
           font: {
-              color: "white"
+              color: 'white'
           }        
       };
 
-      Plotly.newPlot("deathPlot", dataDeaths, layoutDeaths, config);
+      Plotly.newPlot('deathPlot', dataDeaths, layoutDeaths, config);
 
   });
 }
 
 // Select dropdown menu using D3
-var selectDrop = d3.select("#selDataset");
+var selectDrop = d3.select('#selDataset');
+
+// Display default selected data (Travis County) on page load
+d3.select(window).on('load', runEnter());
 
 // Create event handler
-selectDrop.on("change",runEnter);
+selectDrop.on('change',runEnter);
+
 // Event handler function
 function runEnter() {
-  // Prevent the page from refreshing
-  d3.event.preventDefault();
   // Select the input element and get HTML node
-  var inputElement = d3.select("select");
+  var inputElement = d3.select('select');
   // Get the value property of the input element
-  var userCounty = inputElement.property("value");
+  var userCounty = inputElement.property('value');
 
   buildPlot(userCounty);
 };
