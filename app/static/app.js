@@ -43,7 +43,7 @@ function buildPlot(county) {
 
       // Layout for duel-axis graph
       let layoutCases = {
-          title: `${county} County Cumulative Cases (log) and New Daily Cases (linear)`,
+          title: `${county} Cumulative Cases (log) and New Daily Cases (linear)`,
           height: 700,
           width: 1200,
           xaxis: {
