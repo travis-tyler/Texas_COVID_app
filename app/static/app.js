@@ -142,7 +142,7 @@ var selectDrop = d3.select('#selDataset');
 // Display default selected data (Travis County) on page load
 d3.select(window).on('load', runEnter());
 
-// Create event handler
+// Display new data on dropdown change
 selectDrop.on('change',runEnter);
 
 // Event handler function
