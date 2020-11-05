@@ -17,7 +17,7 @@ df = pd.DataFrame(pd.read_csv(url))
 df = df.loc[df.COUNTRY_ALPHA_3_CODE=='USA']
 df = df.dropna(how='all')
 
-# Remove uncessary columns and rename others
+# Remove unnecessary columns and rename others
 df = df.rename(columns={'REPORT_DATE':'date',
                         'PROVINCE_STATE_NAME':'state',
                         'COUNTY_NAME':'county',
