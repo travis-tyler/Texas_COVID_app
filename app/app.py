@@ -17,9 +17,6 @@ df = pd.DataFrame(pd.read_csv(url))
 df = df.loc[df.COUNTRY_ALPHA_3_CODE=='USA']
 df = df.dropna(how='all')
 
-# Create new 'county_state' column for easier selection
-df['county_state'] = df['COUNTY_NAME'] + ', ' + df['PROVINCE_STATE_NAME']
-
 # Remove uncessary columns and rename others
 df = df.rename(columns={'REPORT_DATE':'date',
                         'PROVINCE_STATE_NAME':'state',
@@ -34,9 +31,7 @@ df_texas = df.loc[df.state == 'Texas']
 
 # Create list of counties for dropdown menu
 county_list = df_texas['county'].unique().tolist()
-county_list = sorted(county_list)
-county_list.insert(0,'Texas - Sum')
-county_list.insert(0,'USA - Sum')
+county_list = ['USA', 'Texas'] + sorted(county_list)
 
 ##########################################################
 
@@ -45,43 +40,33 @@ county_list.insert(0,'USA - Sum')
 def home():
     return render_template('index.html', all_counties=county_list)
 
-# Route to take a county name and return COVID data in JSON form for app.js
+# Return county name and return COVID data in JSON form for app.js to API
 @app.route("/county_data" , methods=['GET', 'POST'])
 def county_data():
 
+    # Get county selection
     county = request.args.get('county')
     
-    # Returns total USA numbers
-    if county == 'USA - Sum':
-        total_usa = df.sort_values('date')
-        total_usa = total_usa.groupby('date')[['new_cases','total_cases','new_deaths','total_deaths']].sum()
-        total_usa['rolling_cases'] = total_usa.new_cases.rolling(14).mean() 
-        total_usa['rolling_death'] = total_usa.new_deaths.rolling(14).mean() 
-        output_df = total_usa.dropna(how='any')
-
-    elif county == 'Texas - Sum':
-        total_texas = df_texas.sort_values('date')
-        total_texas = total_texas.groupby('date')[['new_cases','total_cases','new_deaths','total_deaths']].sum()
-        total_texas['rolling_cases'] = total_texas.new_cases.rolling(14).mean() 
-        total_texas['rolling_death'] = total_texas.new_deaths.rolling(14).mean() 
-        output_df = total_texas.dropna(how='any')
-        
-    # Returns individual county numbers
+    # Conditional to return USA, Texas or individual county data
+    if county == 'USA':
+        selected_df = df.sort_values('date')
+    elif county == 'Texas':
+        selected_df = df_texas.sort_values('date') 
     else:
-        county_df = df_texas.loc[df_texas.county==county]
-        county_df = county_df.sort_values('date')
-        county_df = county_df.groupby('date')[['new_cases','total_cases','new_deaths','total_deaths']].sum()
-        county_df['rolling_cases'] = county_df.new_cases.rolling(14).mean() 
-        county_df['rolling_death'] = county_df.new_deaths.rolling(14).mean() 
-        output_df = county_df.dropna(how='any')
+        selected_df = df_texas.loc[df_texas.county==county].sort_values('date')
+
+    selected_df = selected_df.groupby('date')[['new_cases','total_cases','new_deaths','total_deaths']].sum()
+    selected_df['rolling_cases'] = selected_df.new_cases.rolling(14).mean() 
+    selected_df['rolling_death'] = selected_df.new_deaths.rolling(14).mean() 
+    output_df = selected_df.dropna(how='any')
 
     output_json = {'date':output_df.index.to_list(),
-                    'new_cases':output_df.new_cases.to_list(),
-                    'total_cases':output_df.total_cases.to_list(),
-                    'new_deaths':output_df.new_deaths.to_list(),
-                    'total_deaths':output_df.total_deaths.to_list(),
-                    'rolling_cases':output_df.rolling_cases.to_list(),
-                    'rolling_death':output_df.rolling_death.to_list()
+                   'new_cases':output_df.new_cases.to_list(),
+                   'total_cases':output_df.total_cases.to_list(),
+                   'new_deaths':output_df.new_deaths.to_list(),
+                   'total_deaths':output_df.total_deaths.to_list(),
+                   'rolling_cases':output_df.rolling_cases.to_list(),
+                   'rolling_death':output_df.rolling_death.to_list()
     }
         
     # Send to "/county_data"
