@@ -13,11 +13,24 @@ app = Flask(__name__)
 
 # Read in CSV data from URL
 url = 'https://query.data.world/s/o6que7zbpjnykcz3ayncuhwkgsb3dp'
-df = pd.DataFrame(pd.read_csv(url))
+# Specify wanted columns and dtypes to conserve memory
+fields = ['REPORT_DATE','PROVINCE_STATE_NAME',
+          'COUNTY_NAME','PEOPLE_POSITIVE_NEW_CASES_COUNT',
+          'PEOPLE_POSITIVE_CASES_COUNT','PEOPLE_DEATH_NEW_COUNT',
+          'PEOPLE_DEATH_COUNT','COUNTRY_ALPHA_3_CODE']
+dtypes = {'REPORT_DATE':'str',
+          'PROVINCE_STATE_NAME':'str',
+          'COUNTY_NAME':'str',
+          'PEOPLE_POSITIVE_NEW_CASES_COUNT':'int32',
+          'PEOPLE_POSITIVE_CASES_COUNT':'int32',
+          'PEOPLE_DEATH_NEW_COUNT':'int32',
+          'PEOPLE_DEATH_COUNT':'int32',
+          'COUNTRY_ALPHA_3_CODE':'str'}
+df = pd.DataFrame(pd.read_csv(url, skipinitialspace=True, usecols=fields, dtype=dtypes))
 df = df.loc[df.COUNTRY_ALPHA_3_CODE=='USA']
 df = df.dropna(how='all')
 
-# Remove unnecessary columns and rename others
+# Rename columns
 df = df.rename(columns={'REPORT_DATE':'date',
                         'PROVINCE_STATE_NAME':'state',
                         'COUNTY_NAME':'county',
@@ -25,6 +38,7 @@ df = df.rename(columns={'REPORT_DATE':'date',
                         'PEOPLE_POSITIVE_CASES_COUNT':'total_cases',
                         'PEOPLE_DEATH_NEW_COUNT':'new_deaths',
                         'PEOPLE_DEATH_COUNT':'total_deaths'})
+
 
 # Select Texas data and remove latest date
 df_texas = df.loc[df.state == 'Texas']
@@ -40,7 +54,7 @@ county_list = ['USA', 'Texas'] + sorted(county_list)
 def home():
     return render_template('index.html', all_counties=county_list)
 
-# Return county name and return COVID data in JSON form for app.js to API
+# Return county name and return COVID data in JSON form to API for app.js 
 @app.route("/county_data" , methods=['GET', 'POST'])
 def county_data():
 
