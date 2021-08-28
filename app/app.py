@@ -7,6 +7,7 @@ from flask import (
     request,
     redirect)
 import pandas as pd
+import numpy as np
 import datetime as dt
 
 # Flask Setup
@@ -45,6 +46,11 @@ def county_data():
         selected_df = df_texas.groupby('date', as_index=False)[['cases','deaths','new_cases','new_deaths']].sum()
     else:
         selected_df = df_texas.loc[df_texas.county==county]
+
+    # np.where to replace negative numbers with 0
+    # TODO: find better solution to graph corrections
+    selected_df['new_cases'] = np.where(selected_df.new_cases<0, 0, selected_df.new_cases)
+    selected_df['new_deaths'] = np.where(selected_df.new_deaths<0, 0, selected_df.new_deaths)
 
     selected_df['rolling_cases'] = selected_df.new_cases.rolling(14).mean() 
     selected_df['rolling_death'] = selected_df.new_deaths.rolling(14).mean() 
