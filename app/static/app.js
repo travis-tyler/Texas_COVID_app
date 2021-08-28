@@ -32,11 +32,11 @@ function buildPlot(county) {
           x: response.date,
           y: response.total_cases,
           yaxis: 'y2',
-          type: "line",
+          type: 'line',
           line:{
             color: 'orange'
           },
-          name: "Total cases"
+          name: 'Total cases'
       };
 
       let dataCases = [traceNewCases, traceRollingCases, traceAllCases];
@@ -63,7 +63,7 @@ function buildPlot(county) {
             dtick: 1          
           },
           font: {
-              color: "white"
+              color: 'white'
           }        
       };
 
@@ -112,7 +112,7 @@ function buildPlot(county) {
           width: 1200,
           xaxis: {
               title: 'Date'
-          },
+            },
           yaxis: {
             title: 'New deaths',
           },

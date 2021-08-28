@@ -7,38 +7,15 @@ from flask import (
     request,
     redirect)
 import pandas as pd
+import datetime as dt
 
 # Flask Setup
 app = Flask(__name__)
 
 # Read in CSV data from URL
-url = 'https://query.data.world/s/o6que7zbpjnykcz3ayncuhwkgsb3dp'
-# Specify wanted columns and dtypes to conserve memory
-fields = ['REPORT_DATE','PROVINCE_STATE_NAME',
-          'COUNTY_NAME','PEOPLE_POSITIVE_NEW_CASES_COUNT',
-          'PEOPLE_POSITIVE_CASES_COUNT','PEOPLE_DEATH_NEW_COUNT',
-          'PEOPLE_DEATH_COUNT','COUNTRY_ALPHA_3_CODE']
-dtypes = {'REPORT_DATE':'str',
-          'PROVINCE_STATE_NAME':'str',
-          'COUNTY_NAME':'str',
-          'PEOPLE_POSITIVE_NEW_CASES_COUNT':'int32',
-          'PEOPLE_POSITIVE_CASES_COUNT':'int32',
-          'PEOPLE_DEATH_NEW_COUNT':'int32',
-          'PEOPLE_DEATH_COUNT':'int32',
-          'COUNTRY_ALPHA_3_CODE':'str'}
-df = pd.DataFrame(pd.read_csv(url, skipinitialspace=True, usecols=fields, dtype=dtypes))
-df = df.loc[df.COUNTRY_ALPHA_3_CODE=='USA']
-df = df.dropna(how='all')
-
-# Rename columns
-df = df.rename(columns={'REPORT_DATE':'date',
-                        'PROVINCE_STATE_NAME':'state',
-                        'COUNTY_NAME':'county',
-                        'PEOPLE_POSITIVE_NEW_CASES_COUNT':'new_cases',
-                        'PEOPLE_POSITIVE_CASES_COUNT':'total_cases',
-                        'PEOPLE_DEATH_NEW_COUNT':'new_deaths',
-                        'PEOPLE_DEATH_COUNT':'total_deaths'})
-
+url = 'https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-counties.csv'
+df = pd.DataFrame(pd.read_csv(url, skipinitialspace=True, parse_dates=['date']))
+df[['new_cases','new_deaths']] = df.groupby(['state','county'], as_index=False)[['cases','deaths']].diff().fillna(0)
 
 # Select Texas data and remove latest date
 df_texas = df.loc[df.state == 'Texas']
@@ -63,25 +40,24 @@ def county_data():
     
     # Conditional to return USA, Texas or individual county data
     if county == 'USA':
-        selected_df = df.sort_values('date')
+        selected_df = df.groupby('date', as_index=False)[['cases','deaths','new_cases','new_deaths']].sum()
     elif county == 'Texas':
-        selected_df = df_texas.sort_values('date') 
+        selected_df = df_texas.groupby('date', as_index=False)[['cases','deaths','new_cases','new_deaths']].sum()
     else:
-        selected_df = df_texas.loc[df_texas.county==county].sort_values('date')
+        selected_df = df_texas.loc[df_texas.county==county]
 
-    selected_df = selected_df.groupby('date')[['new_cases','total_cases','new_deaths','total_deaths']].sum()
     selected_df['rolling_cases'] = selected_df.new_cases.rolling(14).mean() 
     selected_df['rolling_death'] = selected_df.new_deaths.rolling(14).mean() 
     output_df = selected_df.dropna(how='any')
+    output_df['date'] = output_df['date'].astype('str')
 
-    output_json = {'date':output_df.index.to_list(),
+    output_json = {'date':output_df.date.to_list(),
                    'new_cases':output_df.new_cases.to_list(),
-                   'total_cases':output_df.total_cases.to_list(),
+                   'total_cases':output_df.cases.to_list(),
                    'new_deaths':output_df.new_deaths.to_list(),
-                   'total_deaths':output_df.total_deaths.to_list(),
+                   'total_deaths':output_df.deaths.to_list(),
                    'rolling_cases':output_df.rolling_cases.to_list(),
-                   'rolling_death':output_df.rolling_death.to_list()
-    }
+                   'rolling_death':output_df.rolling_death.to_list()}
         
     # Send to "/county_data"
     return jsonify(output_json)
